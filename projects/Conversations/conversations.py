@@ -27,7 +27,7 @@ OUTPUT_MAX_WIDTH = 70 # text wrapping width
 
 def send_api_request(messages):
 
-    API_KEY = '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' # DO NOT DISCLOSE
+    API_KEY = 'UNAVAILABLE' # DO NOT DISCLOSE
     API_URL = 'https://api.openai.com/v1/chat/completions'
 
     headers = {
