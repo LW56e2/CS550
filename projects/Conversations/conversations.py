@@ -22,26 +22,29 @@ import sys
 
 
 logging.basicConfig(level=logging.ERROR) # toggle logging.ERROR or logging.DEBUG for debugging
-TEXT_WRAPPING = False # boolean to toggle text wrapping
+TEXT_WRAPPING = True # boolean to toggle text wrapping
 OUTPUT_MAX_WIDTH = 70 # text wrapping width
 
 def send_api_request(messages):
 
-    API_KEY = 'UNAVAILABLE' # DO NOT DISCLOSE
+    API_KEY = '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' # DO NOT DISCLOSE
     API_URL = 'https://api.openai.com/v1/chat/completions'
 
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
         "Authorization": f"Bearer {API_KEY}"
+
     }
 
     body = {
         "model": "gpt-4-1106-preview", # GPT-4 Turbo model
         "messages": messages,
-        "max_tokens": 2000,
-        "temperature": 0.2 # Consistency of the response (lower = more consistent)
+        "max_tokens": 500,
+        "temperature": 0.5 # Consistency of the response (lower = more consistent)
+
     }
+
 
     response = requests.post(API_URL,headers=headers,data=json.dumps(body)) # send request
 
@@ -75,6 +78,40 @@ def ai_convo():
             [print(wrapped_response) for wrapped_response in textwrap.wrap(assistant_response,width=70,replace_whitespace=False)]
         else:
             print(assistant_response)
+
+def ai_talk_to_ai():
+    messages = [{'role': 'user','content': 'Hello!'}]
+    assistant_response = send_api_request(messages)
+    messages.append({'role': 'assistant', 'content': assistant_response})
+
+    if TEXT_WRAPPING:
+        [print(wrapped_response) for wrapped_response in textwrap.wrap(assistant_response, width=70, replace_whitespace=False)]
+    else:
+        print(assistant_response)
+
+    while True:
+        #messages.append({'role': 'user', 'content': assistant_response})
+
+        assistant_response = send_api_request([{'role': 'system','content': 'Begin your messages with \'We are both AI and were coded to talk to '
+                                                                            'each other. Lets argue how to solve climate change\''}]+messages)
+        messages.append({'role': 'assistant', 'content': assistant_response})
+
+        if TEXT_WRAPPING:
+            [print(wrapped_response) for wrapped_response in textwrap.wrap(assistant_response, width=70, replace_whitespace=False)]
+            print('\n')
+        else:
+            print(assistant_response,'\n')
+
+        for message in messages:
+            if message['role'] == 'user':
+                message['role'] = 'assistant'
+            elif message['role'] == 'assistant':
+                message['role'] = 'user'
+
+
+
+
+
 def programmed_convo():
     print('Hey! What\'s your name?')
     user_name = input('>>> ')
@@ -130,5 +167,6 @@ def programmed_convo():
     print('(Say Anything)')
 
 
-programmed_convo()
-ai_convo()
+#programmed_convo()
+#ai_convo()
+ai_talk_to_ai()
